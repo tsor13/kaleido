@@ -8,9 +8,10 @@ To intiialize the system, you can use the following code:
 
 ```python
 from KaleidoSys import KaleidoSys
-system = KaleidoSys('tsor13/kaleido-small')
+system = KaleidoSys(model_name='tsor13/kaleido-small') # sizes: small, base, large, xl, xxl
 ```
 
+#### Generate Values, Rights, and Duties
 From here, you can use the system to generate a candidate set of values, rights, and duties:
 
 ```python
@@ -28,4 +29,31 @@ Output:
 9   Biking to work instead of driving  Value                                        Safety      0.82      0.15     0.81    0.04  opposes
 10  Biking to work instead of driving  Value                                    Efficiency      0.76      0.13     0.81    0.06  opposes
 11  Biking to work instead of driving  Value                                Responsibility      0.71      0.16     0.78    0.06  opposes
+```
+
+#### Evaluate Relevance
+```python
+system.get_relevance('Do a pushup', 'Value', 'Health')
+```
+Output:
+```python
+tensor([0.9310, 0.0690]) # first number is p(relevant), second is p(not relevant)
+```
+
+#### Evaluate Valence
+```python
+system.get_valence('Do a pushup', 'Value', 'Health')
+```
+Output:
+```python
+tensor([0.6247, 0.2245, 0.1508]) # p(Supports), p(Opposes), p(Either)
+```
+
+#### Explanation
+```python
+system.get_explanation('Do a pushup', 'Value', 'Health')
+```
+Output:
+```python
+'Pushups can improve the health of the individual, promoting their well-being and promoting overall well-being.'
 ```
