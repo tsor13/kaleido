@@ -8,7 +8,7 @@ To intiialize the system, you can use the following code:
 
 ```python
 from KaleidoSys import KaleidoSys
-system = KaleidoSys(model_name='tsor13/kaleido-small') # sizes: small, base, large, xl, xxl
+system = KaleidoSys(model_name='tsor13/kaleido-xl') # sizes: small, base, large, xl, xxl
 ```
 
 #### Generate Values, Rights, and Duties
@@ -19,16 +19,15 @@ system.get_candidates('Biking to work instead of driving')
 ```
 Output:
 ```python
-                               action    vrd                                         value  relevant  supports  opposes  either    label
-0   Biking to work instead of driving   Duty   Duty to maintain a healthy work environment      0.98      0.15     0.74    0.11  opposes
-1   Biking to work instead of driving  Right           Right to a healthy work environment      0.97      0.17     0.76    0.07  opposes
-2   Biking to work instead of driving   Duty                 Duty to abide by traffic laws      0.95      0.07     0.88    0.05  opposes
-3   Biking to work instead of driving   Duty  Duty to be considerate of others' well-being      0.94      0.10     0.76    0.14  opposes
-4   Biking to work instead of driving  Value                             Work-life balance      0.93      0.10     0.83    0.07  opposes
-6   Biking to work instead of driving  Value                           Personal well-being      0.85      0.21     0.70    0.09  opposes
-9   Biking to work instead of driving  Value                                        Safety      0.82      0.15     0.81    0.04  opposes
-10  Biking to work instead of driving  Value                                    Efficiency      0.76      0.13     0.81    0.06  opposes
-11  Biking to work instead of driving  Value                                Responsibility      0.71      0.16     0.78    0.06  opposes
+                              action    vrd                                         value  relevant  supports  opposes  either     label
+0  Biking to work instead of driving   Duty        Duty to be environmentally responsible      1.00      1.00     0.00    0.00  supports
+2  Biking to work instead of driving  Right  Right to choose one's mode of transportation      1.00      0.26     0.00    0.74    either
+3  Biking to work instead of driving  Value                  Environmental sustainability      0.99      1.00     0.00    0.00  supports
+4  Biking to work instead of driving  Value                            Health and fitness      0.99      1.00     0.00    0.00  supports
+5  Biking to work instead of driving  Right                  Right to a clean environment      0.99      1.00     0.00    0.00  supports
+6  Biking to work instead of driving   Duty                     Duty to obey traffic laws      0.99      0.13     0.01    0.86    either
+7  Biking to work instead of driving  Value                                   Convenience      0.98      0.03     0.75    0.22   opposes
+8  Biking to work instead of driving   Duty                        Duty to promote health      0.98      1.00     0.00    0.00  supports
 ```
 
 #### Evaluate Relevance
@@ -37,7 +36,7 @@ system.get_relevance('Do a pushup', 'Value', 'Health')
 ```
 Output:
 ```python
-tensor([0.9310, 0.0690]) # first number is p(relevant), second is p(not relevant)
+tensor([0.9975, 0.0025]) # first number is p(relevant), second is p(not relevant)
 ```
 
 #### Evaluate Valence
@@ -46,7 +45,7 @@ system.get_valence('Do a pushup', 'Value', 'Health')
 ```
 Output:
 ```python
-tensor([0.6247, 0.2245, 0.1508]) # p(Supports), p(Opposes), p(Either)
+tensor([9.9961e-01, 6.0631e-06, 3.8288e-04]) # p(Supports), p(Opposes), p(Either)
 ```
 
 #### Explanation
@@ -55,5 +54,5 @@ system.get_explanation('Do a pushup', 'Value', 'Health')
 ```
 Output:
 ```python
-'Pushups can improve the health of the individual, promoting their well-being and promoting overall well-being.'
+"Doing pushups can improve one's physical fitness and overall well-being."
 ```
