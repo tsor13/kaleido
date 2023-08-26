@@ -156,8 +156,8 @@ class KaleidoSys:
 
     
     def parse_gen(self, gen):
-        vrd, value = gen.split(': ')[0], gen.split(': ')[1]
-        return {'vrd': vrd, 'value': value}
+        vrd, text = gen.split(': ')[0], gen.split(': ')[1]
+        return {'vrd': vrd, 'text': text}
 
     def parse_gens(self, gens):
         decoded = [self.parse_gen(gen) for gen in gens]
@@ -228,8 +228,8 @@ class KaleidoSys:
         for i in range(1, len(df)):
             for j in range(i):
                 if j not in rows_to_drop and (dedup_across_vrd or df.iloc[i]['vrd'] == df.iloc[j]['vrd']):
-                    value_i = clean_example(df.iloc[i]['value'])
-                    value_j = clean_example(df.iloc[j]['value'])
+                    value_i = clean_example(df.iloc[i]['text'])
+                    value_j = clean_example(df.iloc[j]['text'])
 
                     scores = scorer.score(value_i, value_j)[rouge_type]
                     if scores.fmeasure > threshold['fmeasure'] or scores.precision > threshold['precision'] or scores.recall > threshold['recall']:
@@ -257,7 +257,7 @@ class KaleidoSys:
         df = df.reset_index(drop=True)
         # fill in embeddings if not present
         if 'embedding' not in df.columns or force_embeds:
-            df['embedding'] = self.get_embeddings(df['value'].tolist()).tolist()
+            df['embedding'] = self.get_embeddings(df['text'].tolist()).tolist()
 
         rows_to_drop = []
         for i in range(1, len(df)):
@@ -287,21 +287,21 @@ class KaleidoSys:
             raise ValueError('Invalid VRD - {}. Must be "Value", "Right", or "Duty"'.format(vrd))
 
     
-    def get_all_scores(self, actions, vrds, values, explain=False, explanation_decoding_params={}):
-        df = pd.DataFrame({'action': actions, 'vrd': vrds, 'value': values})
+    def get_all_scores(self, actions, vrds, texts, explain=False, explanation_decoding_params={}):
+        df = pd.DataFrame({'action': actions, 'vrd': vrds, 'text': texts})
         # clean vrds
         df['vrd'] = df['vrd'].apply(self.clean_vrd)
         # get relevance
-        relevances = self.get_relevance(actions, vrds, values)
+        relevances = self.get_relevance(actions, vrds, texts)
         df['relevant'] = relevances[:, 0]
         # get valence
-        valences = self.get_valence(actions, vrds, values)
+        valences = self.get_valence(actions, vrds, texts)
         df['supports'] = valences[:, 0]
         df['opposes'] = valences[:, 1]
         df['either'] = valences[:, 2]
         # explain
         if explain:
-            df['explanation'] = self.get_explanation(actions, vrds, values, explanation_decoding_params=explanation_decoding_params)
+            df['explanation'] = self.get_explanation(actions, vrds, texts, explanation_decoding_params=explanation_decoding_params)
         elif explain:
             print('Warning: explanation not supported for this model')
         return df
@@ -311,13 +311,13 @@ class KaleidoSys:
         # decode
         parsed = self.parse_gens(gens)
         # populate
-        df = self.get_all_scores([action] * len(parsed), [d['vrd'] for d in parsed], [d['value'] for d in parsed], explain=explain, explanation_decoding_params=explanation_decoding_params)
+        df = self.get_all_scores([action] * len(parsed), [d['vrd'] for d in parsed], [d['text'] for d in parsed], explain=explain, explanation_decoding_params=explanation_decoding_params)
         # sort by relevance
         df = df.sort_values(by='relevant', ascending=False)
 
         if get_embeddings:
             # get bert embeddings
-            embeddings = self.get_embeddings(df['value'].tolist())
+            embeddings = self.get_embeddings(df['text'].tolist())
             df['embedding'] = embeddings.tolist()
             # make each numpy
             df['embedding'] = df['embedding'].apply(np.array)
@@ -359,7 +359,7 @@ class KaleidoSys:
                     # get label
                     label = row['label']
                     # get text
-                    text = row['value']
+                    text = row['text']
                     # check if explanation in df
                     if 'explanation' in row:
                         explanation = row['explanation']
@@ -422,7 +422,7 @@ class KaleidoSys:
             decoded = decoded[0]
         return decoded
     
-    def get_explanation(self, actions, vrds, values, batch_size=None, explanation_decoding_params={}):
+    def get_explanation(self, actions, vrds, texts, batch_size=None, explanation_decoding_params={}):
         # if max_length isn't present in explanation_decoding_params, set it to 128
         if 'max_length' not in explanation_decoding_params:
             explanation_decoding_params['max_length'] = 128
@@ -434,7 +434,7 @@ class KaleidoSys:
             vrds = [vrds]
             # clean vrds
             vrds = [self.clean_vrd(vrd) for vrd in vrds]
-            values = [values]
+            texts = [texts]
             is_single = True
         if batch_size is None:
             batch_size = self.explanation_batch_size
@@ -444,10 +444,10 @@ class KaleidoSys:
         for i in self.tqdm(range(n_batches), desc='Explanation'):
             batch_actions = actions[i*batch_size:(i+1)*batch_size]
             batch_vrds = vrds[i*batch_size:(i+1)*batch_size]
-            batch_values = values[i*batch_size:(i+1)*batch_size]
+            batch_texts = texts[i*batch_size:(i+1)*batch_size]
             # get explanations
             encoded_batch = self.tokenizer.batch_encode_plus(
-                [self.explanation_template(action, vrd, value) for action, vrd, value in zip(batch_actions, batch_vrds, batch_values)],
+                [self.explanation_template(action, vrd, text) for action, vrd, text in zip(batch_actions, batch_vrds, batch_texts)],
                 return_tensors='pt',
                 padding=True,
                 truncation=True,
@@ -500,11 +500,11 @@ class KaleidoSys:
         probs = torch.softmax(logits, dim=-1)
         return probs.cpu()
 
-    def get_probs_template(self, actions, vrds, values, template, token_ids, batch_size=None):
+    def get_probs_template(self, actions, vrds, texts, template, token_ids, batch_size=None):
         # clean vrds
         vrds = [self.clean_vrd(vrd) for vrd in vrds]
         # templatize
-        inputs = [template(a, v, val) for a, v, val in zip(actions, vrds, values)]
+        inputs = [template(a, v, val) for a, v, val in zip(actions, vrds, texts)]
         # pass through get_probs
         probs = self.get_probs(inputs, batch_size=batch_size)
         probs = probs[:, token_ids]
@@ -512,7 +512,7 @@ class KaleidoSys:
         probs = probs / probs.sum(dim=-1, keepdim=True)
         return probs.cpu()
 
-    def get_relevance(self, actions, vrds, values, batch_size=None):
+    def get_relevance(self, actions, vrds, texts, batch_size=None):
         if not self.model:
             self.load_model()
         # check if str (if single instance, then batch)
@@ -522,10 +522,10 @@ class KaleidoSys:
             vrds = [vrds]
             # clean vrds
             vrds = [self.clean_vrd(vrd) for vrd in vrds]
-            values = [values]
+            texts = [texts]
             single = True
         # run through get_probs_template
-        probs = self.get_probs_template(actions, vrds, values, self.relevant_template, self.relevant_ids, batch_size=batch_size)
+        probs = self.get_probs_template(actions, vrds, texts, self.relevant_template, self.relevant_ids, batch_size=batch_size)
         if single:
             probs = probs[0]
         return probs
