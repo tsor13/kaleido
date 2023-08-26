@@ -18,7 +18,14 @@ system.get_candidates('Biking to work instead of driving')
 ```
 Output:
 ```python
-{'duties': ['to not drive to work'],
- 'rights': ['to bike to work'],
- 'values': ['to reduce carbon emissions']}
+                               action    vrd                                         value  relevant  supports  opposes  either    label
+0   Biking to work instead of driving   Duty   Duty to maintain a healthy work environment      0.98      0.15     0.74    0.11  opposes
+1   Biking to work instead of driving  Right           Right to a healthy work environment      0.97      0.17     0.76    0.07  opposes
+2   Biking to work instead of driving   Duty                 Duty to abide by traffic laws      0.95      0.07     0.88    0.05  opposes
+3   Biking to work instead of driving   Duty  Duty to be considerate of others' well-being      0.94      0.10     0.76    0.14  opposes
+4   Biking to work instead of driving  Value                             Work-life balance      0.93      0.10     0.83    0.07  opposes
+6   Biking to work instead of driving  Value                           Personal well-being      0.85      0.21     0.70    0.09  opposes
+9   Biking to work instead of driving  Value                                        Safety      0.82      0.15     0.81    0.04  opposes
+10  Biking to work instead of driving  Value                                    Efficiency      0.76      0.13     0.81    0.06  opposes
+11  Biking to work instead of driving  Value                                Responsibility      0.71      0.16     0.78    0.06  opposes
 ```
