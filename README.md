@@ -14,7 +14,7 @@ system = KaleidoSys('tsor13/kaleido-small')
 From here, you can use the system to generate a candidate set of values, rights, and duties:
 
 ```python
-system.get_outputs('Biking to work instead of driving')
+system.get_candidates('Biking to work instead of driving')
 ```
 Output:
 ```python
