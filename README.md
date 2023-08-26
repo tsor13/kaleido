@@ -19,7 +19,7 @@ system.get_candidates('Biking to work instead of driving')
 ```
 Output:
 ```python
-                              action    vrd                                         value  relevant  supports  opposes  either     label
+                              action    vrd                                          text  relevant  supports  opposes  either     label
 0  Biking to work instead of driving   Duty        Duty to be environmentally responsible      1.00      1.00     0.00    0.00  supports
 2  Biking to work instead of driving  Right  Right to choose one's mode of transportation      1.00      0.26     0.00    0.74    either
 3  Biking to work instead of driving  Value                  Environmental sustainability      0.99      1.00     0.00    0.00  supports
