@@ -554,34 +554,3 @@ if __name__ == '__main__':
     while True:
         action = input('Action: ')
         system.get_candidates(action, explain=False)
-
-    # Define sample actions, VRDs, and values
-    n = 1
-    actions = ['A boy kissing a girl'*100, 'A boy kissing a girl when she said no', 'A boy kissing a girl when she\'s sick'] * n
-    vrds = ['Value', 'Value', 'Value'] * n
-    values = ['Consent', 'Consent', 'Consent'] * n
-
-    # # batching sizes - single a100
-    # inference_batch_size = 1024
-    # generation_batch_size = 32
-    # torch - check gpu memory
-    # else:
-    #     inference_batch_size = 256
-    #     generation_batch_size = 8
-
-
-    # Test get_relevance
-    relevance = system.get_relevance(actions, vrds, values)
-    print(relevance[:5])
-
-    # Test get_valence
-    valence_batch = system.get_valence(actions, vrds, values)
-    print(valence_batch[:5])
-
-    gens_batch = system.get_gens(actions)
-    print(gens_batch[:5, :5])
-
-
-    # # Test get_embedding_batch
-    # embeddings_batch = model.get_embedding_batch(actions)
-    # print(embeddings_batch)
