@@ -1,6 +1,6 @@
 # Value Kaleidoscope
 
-This repository is a companion for [Value Kaleidoscope: Engaging AI with Pluralistic Values, Rights, and Duties](https://kaleido.allen.ai). Here are some other links of interest: [demo](https://kaleido.allen.ai/), [dataset](https://huggingface.co/datasets/tsor13/ValuePrism), and models ([small](https://huggingface.co/tsor13/kaleido-small), [base](https://huggingface.co/tsor13/kaleido-base), [large](https://huggingface.co/tsor13/kaleido-large), [xl](https://huggingface.co/tsor13/kaleido-xl), [xxl](https://huggingface.co/tsor13/kaleido-xxl)).
+This repository is a companion for [Value Kaleidoscope: Engaging AI with Pluralistic Values, Rights, and Duties](https://arxiv.org/abs/2309.00779). Here are some other links of interest: [demo](https://kaleido.allen.ai/), [dataset](https://huggingface.co/datasets/tsor13/ValuePrism), and models ([small](https://huggingface.co/tsor13/kaleido-small), [base](https://huggingface.co/tsor13/kaleido-base), [large](https://huggingface.co/tsor13/kaleido-large), [xl](https://huggingface.co/tsor13/kaleido-xl), [xxl](https://huggingface.co/tsor13/kaleido-xxl)).
 
 > [!WARNING]  
 > Kaleido is intended for research purposes only. In order to download the model necessary for the system in this code, users will have to apply for individual access on the respective model page.
@@ -58,4 +58,16 @@ system.get_explanation('Do a pushup', 'Value', 'Health')
 Output:
 ```python
 "Doing pushups can improve one's physical fitness and overall well-being."
+```
+## Citation
+If you use Kaleido, please cite it with:
+```
+@misc{sorensen2023value,
+      title={Value Kaleidoscope: Engaging AI with Pluralistic Human Values, Rights, and Duties}, 
+      author={Taylor Sorensen and Liwei Jiang and Jena Hwang and Sydney Levine and Valentina Pyatkin and Peter West and Nouha Dziri and Ximing Lu and Kavel Rao and Chandra Bhagavatula and Maarten Sap and John Tasioulas and Yejin Choi},
+      year={2023},
+      eprint={2309.00779},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
 ```
